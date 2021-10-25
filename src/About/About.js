@@ -2,14 +2,14 @@ import React, { Component, useEffect, useState } from 'react';
 import axios from 'axios';
 import BarChart from './BarChart';
 
-class About extends Component{
+class About extends Component {
 
-    state={
-        journal:this.getData(20)
+    state = {
+        journal: this.getData(20)
 
     }
-    
-    getData(elements){
+
+    getData(elements) {
         let names = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let data = [];
         for (var i = 0; i < elements; i++) {
@@ -20,52 +20,52 @@ class About extends Component{
         }
         return data;
     }
-    
 
-    componentDidMount(){
-        var self=this;
-        console.log("React Hook Call journal..!!")
-        axios.get("http://localhost:8000/chartview/").then((res)=>{
-            console.log(res);
-            console.log("React inside journal..!!")
-            
+
+    componentDidMount() {
+        var self = this;
+        // console.log("React Hook Call journal..!!")
+        axios.get("http://localhost:8000/chartview/").then((res) => {
+            // console.log(res);
+            // console.log("React inside journal..!!")
+
             let retData = JSON.parse(res.data)["data"];
-            console.log(retData);
-            let data =[];
-            for (var i =0; i< retData.length; i++){
+            // console.log(retData);
+            let data = [];
+            for (var i = 0; i < retData.length; i++) {
                 data.push({
                     "label": retData[i][0],
                     "value": retData[i][1]
                 });
-  
+
             }
-            console.log(data);
-            self.setState({journal:data});
+            // console.log(data);
+            self.setState({ journal: data });
         })
-        .catch(function(error){
-            console.log(error);
-        })
+            .catch(function (error) {
+                // console.log(error);
+            })
     }
-    
-    render(){
-        return(
+
+    render() {
+        return (
             <div className="container">
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-    
-                <BarChart 
+                <br />
+                <br />
+                <br />
+                <br />
+
+                <BarChart
                     data={this.state.journal}
                     title="Barchat Trial"
                     color="#70CAD1"
                 />
-    
+
                 {/* </BarChart> */}
-    
-    
+
+
             </div>
-    
+
         );
 
     }
@@ -84,7 +84,7 @@ export default About;
 //         console.log("React Hook Call journal..!!")
 //         axios.get("http://localhost:8000/chartview/").then((res)=>{
 //             console.log(res);
-            
+
 //             let retData = JSON.parse(res.data)["data"];
 //             let data =[];
 //             for (var i =0; i< retData.length; i++){

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useState, useEffect, useCallback } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { styled, useTheme } from "@mui/material/styles";
 import Box from '@mui/material/Box';
 import MuiAppBar from '@mui/material/AppBar';
@@ -8,8 +8,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-
+import { removeWaferlistDatas, addWaferlistDatas } from '../../../actions/waferlist/addWaferlist'
 import Drawers from '../drawer/drawer';
+import { checkedInspectionListAction, uncheckedInspectionListAction } from '../../../actions/checkedInspectionListAction';
 
 
 const drawerWidth = 240;
@@ -45,25 +46,73 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 export default function DenseAppBar() {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
-  const [lists, setLists] = useState('')
-  const inspectionStoreList = [];
-  useSelector(state => inspectionStoreList.push(state.inspectionListToStore));
-  // const storeList =  useSelector(state => state.inspectionListToStore);
+
+  const [sideBarData, setSideBarData] = useState('');
+  const dispatch = useDispatch();
+
+
+
+  let sidebardata = useSelector(state => {
+    return state.totalSidebarData;
+  });
+
+  let totalWaferlistData = useSelector(state => {
+    return state.totalWaferlists;
+  });
+
 
   useEffect(() => {
-    inspectionStoreList.map((i) => setLists(i));
-  }, [inspectionStoreList])
+    setSideBarData(sidebardata)
+  }, [sidebardata])
+
+
+
+  const [checked, setChecked] = useState();
+
+  useEffect(() => {
+    setChecked(new Array(sideBarData.length).fill(true));
+  }, [sidebardata.length, sidebardata])
+
+
+
+
 
 
 
   const handleDrawerOpen = () => {
-    console.log("opennnnn")
     setOpen(true)
+
   }
 
   const handleDrawerClose = () => {
-    console.log("closeee")
     setOpen(false)
+  };
+
+  const handleChange = (checkboxvalue, position) => {
+    const updatedCheckedState = checked.map((item, index) => { // for update true or false
+      return index === position ? !item : item
+    })
+    setChecked(updatedCheckedState)
+
+    updatedCheckedState.map((value, index) => {
+
+      if (value == false) {
+        //remove waferlist
+        dispatch(removeWaferlistDatas(checkboxvalue))
+      }
+      if (value == true) {
+        sidebardata.map((item, index) => {
+          totalWaferlistData.map((val, index) => {
+            if (item.id !== val.id) {
+              dispatch(addWaferlistDatas(item))
+            }
+          })
+        })
+      }
+
+
+    })
+
   };
 
 
@@ -94,6 +143,8 @@ export default function DenseAppBar() {
         <Drawers
           handleDrawerClose={handleDrawerClose}
           openfield={open}
+          handleChange={handleChange}
+          checked={checked}
 
         />
         : false}

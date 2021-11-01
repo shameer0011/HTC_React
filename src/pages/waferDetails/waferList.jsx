@@ -38,9 +38,8 @@ const WaferList = () => {
     const dispatch = useDispatch();
     const [inspectionStoreList, setInspectionStoreList] = useState([]);
     const [selectedInspectionList, setSelectedInspectionList] = useState([]);
-    console.log(selectedInspectionList, "to wafer list")
     // const storeLists = useSelector(state => state.inspectionListToStore);
-    const state = useSelector(state => state.selectInspectionList);
+    const state = useSelector(state => state.totalWaferlists);
 
 
     // useEffect(() => {
@@ -60,8 +59,7 @@ const WaferList = () => {
             {selectedInspectionList.map((list) => {
                 return (
                     <>
-
-                        <Grid item xs={4} style={{ border: "1px solid" }} >
+                        <Grid item xs={4}  >
                             <div className={classes.root} onClick={() => waferClick(list)} >
                             </div>
                             <Typography variant="h6" style={{ margin: "auto" }}>

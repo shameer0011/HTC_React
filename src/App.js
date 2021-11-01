@@ -7,13 +7,14 @@ import ConfigureStore from "../src/stores/configureStore";
 
 const App = () => {
   const store = ConfigureStore();
-  console.log(store.getState(), "storeeee")
+  // console.log(store.getState(), "storeeee")
   useEffect(() => {
     store.subscribe(() => {
       const state = store.getState();
-      console.log(state.checkedInspectionList, "storeeeeee state")
+      console.log(state.breadcumbReducer, "storeeeeee state")
     });
   }, [])
+
 
   return (
     <div>

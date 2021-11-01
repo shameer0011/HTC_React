@@ -14,7 +14,7 @@ export default function BasicTable(props) {
 
     const { columnDefinition, body, Rowcount,
         clickToBackandForward, CheckboxDetail,
-        clickCheckbox, handleChange, checkedCopy
+        clickCheckbox, handleChange, checkedState
 
     } = props;
 
@@ -56,7 +56,7 @@ export default function BasicTable(props) {
                         >
                             <TableCell component="th" scope="row">
                                 <Checkbox
-                                    checked={rowIndex[rowIndex]}
+                                    checked={checkedState[rowIndex]}
                                     onChange={(e) => handleChange(row, rowIndex, e)}
                                     inputProps={{ 'aria-label': 'controlled' }}
                                 />

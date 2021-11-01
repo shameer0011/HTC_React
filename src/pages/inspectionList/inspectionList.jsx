@@ -13,14 +13,13 @@ import { updatePageIndex } from '../../actions/pageAction';
 import Example from '../../servieces/example'
 import { addInspectionList, totalInspectionListAction } from '../../actions/inspectionListAction';
 import Checkbox from '@mui/material/Checkbox';
-import { checkedInspectionListAction } from '../../actions/checkedInspectionListAction'
+import { checkedInspectionListAction, uncheckedInspectionListAction } from '../../actions/checkedInspectionListAction'
+import totalSidebarData from '../../reducers/sidebarReducer/SelectInspectionData';
+import { removeSidebarData, sidebarSelectInspectDatas } from '../../actions/sidebar/selectInspectionAction';
+import { addWaferlistDatas, removeWaferlistDatas } from '../../actions/waferlist/addWaferlist';
 const InspectionList = () => {
 
-    // const appStore = useContext(AppStore);
-    // console.log(appStore, "app store")
-
     const [inspectionLists, setInspectionLists] = useState([]);
-    console.log(inspectionLists, "opppp")
     const [forward, setForward] = useState(0);
     const pages = [];
     const [page, setPage] = useState([]);
@@ -29,9 +28,16 @@ const InspectionList = () => {
     const pageLimit = inspectionLists.length / Rowcount;
     const history = useHistory();
     const dispatch = useDispatch();
+    //total inspection lists
+    const totalList = useSelector(state => state.totalInspectionList);
+    //totalSidebarData
+    const totalSidebarList = useSelector(state => state.totalSidebarData);
+    console.log(totalSidebarList, "oppppppp")
+    const [checkedState, setCheckedState] = useState();
+    const checkedInspectionListFromStore = useSelector(state => state.checkedInspectionList);
+    const [data, setData] = useState(checkedInspectionListFromStore);
 
-    const [checkedCopy, setCheckedCopy] = useState({})
-    console.log(checkedCopy, "chcked copyyyyy")
+
     useEffect(() => {
         Object.keys(Array.apply(0, Array(arrayLength / Rowcount))).map((Number) => {
             pages.push(Number);
@@ -40,31 +46,14 @@ const InspectionList = () => {
     }, [arrayLength])
 
 
-    const totalList = useSelector(state => state.totalInspectionList);
 
-    const checkedInspectionListFromStore = useSelector(state => state.checkedInspectionList);
-    console.log(checkedInspectionListFromStore, "checked list")
-
-
-    // const found = state.some(r => totalList.includes(r));
-    // console.log(found, "found")
-
-
-    // const f = () => {
-    //     const c = Example(GetInspectionData);
-    //     console.log(c, "cccccc")
-    //     return c;
-    // }
-    // useEffect(() => {
-    //     const v = f();
-    //     console.log(v, "gfgfhhghghgh")
-    //     console.log("haiiiiii")
-    // }, [])
-
+    useEffect(() => {
+        setData(checkedInspectionListFromStore)
+    }, [checkedInspectionListFromStore])
 
 
     useEffect(() => {
-        dispatch(totalInspectionListAction(inspectionLists))
+        setCheckedState(new Array(inspectionLists.length).fill(false));
     }, [inspectionLists])
 
     useEffect(() => {
@@ -102,16 +91,39 @@ const InspectionList = () => {
         checkboxValueses = selectCheckboxValue;
     }
 
-    const handleChange = (value, index, event) => {
+    // To store all inspection lists
 
-        const checkedFields = totalList.map((item) => {
-            item.isChecked = item.id === value.id
-            return item;
+    dispatch(totalInspectionListAction(inspectionLists))
+    // total inspection table data;
+
+    const handleChange = (checkBoxvalue, position) => {
+
+        dispatch(sidebarSelectInspectDatas(checkBoxvalue))
+
+        const updatedCheckedState = checkedState.map((item, index) => { // for update true or false
+            return index === position ? !item : item
         })
-        setInspectionLists(checkedFields, "fdfd")
-        dispatch(checkedInspectionListAction(checkedFields))
+        setCheckedState(updatedCheckedState);
 
+        updatedCheckedState.map((value, index) => {
+            if (value === true) {
+                dispatch(checkedInspectionListAction(checkBoxvalue))
+                //to waferlist
+                dispatch(addWaferlistDatas(checkBoxvalue))
 
+            }
+        })
+        if (data?.length) {
+            data.map((value, index) => {
+                if (value.id == checkBoxvalue.id) {
+                    dispatch(uncheckedInspectionListAction(value))
+                    dispatch(removeSidebarData(value))
+                    //remove waferlist
+                    dispatch(removeWaferlistDatas(value))
+
+                }
+            })
+        }
     }
 
 
@@ -124,10 +136,9 @@ const InspectionList = () => {
                 body={inspectionLists}
                 Rowcount={Rowcount}
                 clickToBackandForward={forward}
-                // CheckboxDetail={checkboxDetails}
                 clickCheckbox={clickCheckbox}
                 handleChange={handleChange}
-                checkedCopy={checkedCopy}
+                checkedState={checkedState}
 
             />
             <Pagination

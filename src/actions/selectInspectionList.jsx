@@ -14,7 +14,6 @@ export const addSelectInspectionLists = lists => {
 // ..> To wafer list
 
 export const removeSelectInspectionList = lists => {
-    console.log(lists, "remove actionsss")
     return {
         type: REMOVE_SELECT_INSPECTION_LIST,
         payload: lists

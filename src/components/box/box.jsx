@@ -20,7 +20,7 @@ export default function BoxSx(props) {
                                 },
                             }}
                             onClick={() => pageNumberClick(pages)}>
-                            {pages}
+                            {+pages + 1}
                         </Box>
                     </>
                 )

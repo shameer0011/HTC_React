@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react';
+// import { useSelector, useDispatch } from 'react-redux'
 import { styled, useTheme, alpha } from '@mui/material/styles';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -14,6 +15,8 @@ import Collapse from "@material-ui/core/es/Collapse/Collapse";
 import Checkbox from '@mui/material/Checkbox';
 import { useSelector, useDispatch } from 'react-redux';
 import { sidebarSelectInspectDatas } from '../../../actions/sidebar/selectInspectionAction';
+import SelectLabels from '../../../components/selectbox/selectbox';
+import { graphOrder } from '../../../actions/drawerAsc/Desc/graphDrawer';
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -29,14 +32,32 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 
 const Drawers = (props) => {
-  const { openfield, handleDrawerClose, handleChange, checked } = props;
+
+  const { openfield, handleDrawerClose, handleChange } = props;
+
   const dispatch = useDispatch()
   const theme = useTheme();
+  const defaultGraphOrder = useSelector((state) => state.graphOrderReducer);
+  console.log(defaultGraphOrder, "from new stores")
+
+  // console.log(ageState, "from selectbox")
   // for collapse and expand or unExpand
   const [clickedIndex, setClickedIndex] = useState({});
-  const sidebarInspectionLists = useSelector(state => state.totalSidebarData);
+  console.log(clickedIndex, "state")
 
+  const [checkedValues, setCheckedValues] = useState([]);
+  const SidebarData = useSelector(state => state.totalSidebarData);
+  // console.log(SidebarData, "in app bar")
 
+  // useEffect(() => {
+  //   //1......
+  //   const checkedItems = totalCheckboxValues.filter((item, index) => item.isChecked == true);
+  //   // console.log(checkedItems)
+  //   setCheckedValues(checkedItems)
+  //   //to store this value.
+  //   dispatch(sidebarSelectInspectDatas(checkedItems))
+  // }, [totalCheckboxValues])
+  // graphOrder('ascending')
 
 
   const showLabels = [
@@ -52,17 +73,22 @@ const Drawers = (props) => {
       setClickedIndex({})
     }
   };
+  // useEffect(() => {
+  //   dispatch(graphOrder('ascending'))
+  // }, [])
 
-
-
-
-  const getValue = (index, text, key) => {
+  const getValue = (index) => {
     setClickedIndex(state => ({
       ...state, // <-- copy previous state
-      [index]: !state[index], // <-- update value by index key ....1: varumbol previous state il indenkil false aakkum..or true
+      [index]: !state[index], // <-- update value by index key ....1: varumbol previous state il indenkil false aakkum..or true  ,state[5]=undefined,so !state[5]=true
     }));
 
   }
+
+  const handleChanges = useCallback((value, age) => {
+    console.log(value, age, "159")
+    dispatch(graphOrder(value))
+  }, [handleChange])
 
 
   return (
@@ -90,7 +116,7 @@ const Drawers = (props) => {
       <Divider />
 
 
-      <div id="wrapper" onClick={handleClose} style={{ height: "100%" }}>
+      <div id="wrapper" onClick={handleClose} >
         <List   >
           {showLabels.map((text, index) => {
             return (
@@ -119,12 +145,13 @@ const Drawers = (props) => {
                 >
                   <List id="menu" >
 
-                    {sidebarInspectionLists.map((value, index) => {
+                    {SidebarData.map((value, index) => {
                       return (
                         <>
                           <div style={{ display: "flex" }}>
                             <Checkbox
-                              checked={checked[index]}
+                              // checked={checked[index]}
+                              checked={value.checked}
                               onChange={() => handleChange(value, index)}
                               inputProps={{ 'aria-label': 'controlled' }}
                             />
@@ -143,6 +170,16 @@ const Drawers = (props) => {
           }
           )}
         </List>
+        <Divider />
+        <div style={{}}>
+          <SelectLabels
+            handleChange={handleChanges}
+            stateValue={defaultGraphOrder}
+            label1="ascending"
+            label2="descending"
+
+          />
+        </div>
       </div>
     </Drawer >
   )

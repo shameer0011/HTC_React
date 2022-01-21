@@ -11,7 +11,7 @@ const App = () => {
   useEffect(() => {
     store.subscribe(() => {
       const state = store.getState();
-      console.log(state.breadcumbReducer, "storeeeeee state")
+      // console.log(state.checkedInspectionList, "storeeeeee state")
     });
   }, [])
 
@@ -20,8 +20,6 @@ const App = () => {
     <div>
       <Provider store={store}>
         <Container />
-
-
       </Provider>
     </div>
   )

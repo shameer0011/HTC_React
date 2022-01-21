@@ -1,4 +1,4 @@
-import { ADD_BREADCUMB, UPDATE_BREADCUMB } from "../../reducers/breadcumbReducer/breadcumbReducer";
+import { ADD_BREADCUMB, REMOVE_BREADCUMB, UPDATE_BREADCUMB } from "../../reducers/breadcumbReducer/breadcumbReducer";
 
 export const addBreadcumbs = path => {
     return {
@@ -7,9 +7,13 @@ export const addBreadcumbs = path => {
     };
 };
 export const updateBreadcumbs = index => {
-    console.log(index, "action index")
     return {
         type: UPDATE_BREADCUMB,
         payload: index
+    };
+};
+export const removeBreadcumbs = () => {
+    return {
+        type: REMOVE_BREADCUMB,
     };
 };

@@ -8,7 +8,7 @@ const checkedInspectionList = (state = checkedLists, action) => {
     switch (action.type) {
         case CHECKED_INSPECTION_LISTS:
             if (action)
-                state = [...state, action.payload];
+                state = [...state, ...action.payload];
             const uniqueNames = Array.from(new Set(state));
             return uniqueNames;
         case UNCHECKED_INSPECTION_LISTS:

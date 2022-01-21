@@ -5,19 +5,19 @@ import { Box } from '@mui/system';
 import AppRouter from '../../router/appRouter';
 const Index = () => {
     return (
-        <Box>
+        <>
             <div>
                 <DenseAppBar />
             </div>
-            <Box display="flex">
-                <div>
+            <Box >
+                {/* <div>
                     <SimpleAppBar />
-                </div>
+                </div> */}
                 <div>
                     <AppRouter />
                 </div>
             </Box>
-        </Box>
+        </>
     )
 }
 export default Index;

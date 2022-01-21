@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { styled, useTheme } from "@mui/material/styles";
 import Box from '@mui/material/Box';
@@ -8,10 +8,14 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import { removeWaferlistDatas, addWaferlistDatas } from '../../../actions/waferlist/addWaferlist'
+import { updateWaferlistDatas, addWaferlistDatas } from '../../../actions/waferlist/addWaferlist'
 import Drawers from '../drawer/drawer';
 import { checkedInspectionListAction, uncheckedInspectionListAction } from '../../../actions/checkedInspectionListAction';
-
+import { sidebarSelectInspectDatas, updateSidebarDataAction, updateSidebarValueAction } from '../../../actions/sidebar/selectInspectionAction';
+import { removeWaferlistDatas, addOneWaferlistData } from '../../../actions/waferlist/addWaferlist'
+import { updateTotalInspectionLists } from '../../../actions/inspectionListAction';
+import DrawerContent from '../../drawerContent/drawerContent';
+import { hideAndShowSidebar } from '../../../actions/hideSidebar/hideSidebarAction';
 
 const drawerWidth = 240;
 
@@ -41,97 +45,82 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
 }));
-
+// checking total inspection list
 
 export default function DenseAppBar() {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
 
-  const [sideBarData, setSideBarData] = useState('');
+
   const dispatch = useDispatch();
 
+  const totalLists = useSelector(state => state.totalInspectionList);
 
+  const SidebarData = useSelector(state => state.totalSidebarData);
 
-  let sidebardata = useSelector(state => {
-    return state.totalSidebarData;
-  });
+  const waferlistData = useSelector(state => state.totalWaferlists);
 
-  let totalWaferlistData = useSelector(state => {
-    return state.totalWaferlists;
-  });
-
-
-  useEffect(() => {
-    setSideBarData(sidebardata)
-  }, [sidebardata])
-
-
+  const hideAndShowSidebarIcon = useSelector(state => state.showAndHideSidebarIcon);
 
   const [checked, setChecked] = useState();
 
   useEffect(() => {
-    setChecked(new Array(sideBarData.length).fill(true));
-  }, [sidebardata.length, sidebardata])
+    dispatch(hideAndShowSidebar(false))
 
-
-
-
-
+  }, [])
 
 
   const handleDrawerOpen = () => {
     setOpen(true)
-
   }
 
   const handleDrawerClose = () => {
     setOpen(false)
   };
 
+
+
   const handleChange = (checkboxvalue, position) => {
-    const updatedCheckedState = checked.map((item, index) => { // for update true or false
-      return index === position ? !item : item
-    })
-    setChecked(updatedCheckedState)
+    SidebarData.map((item, index) => {
+      if (checkboxvalue.id == item.id) {
+        item.checked == false ? item.checked = true : item.checked = false
+        dispatch(sidebarSelectInspectDatas(item))
 
-    updatedCheckedState.map((value, index) => {
-
-      if (value == false) {
-        //remove waferlist
-        dispatch(removeWaferlistDatas(checkboxvalue))
-      }
-      if (value == true) {
-        sidebardata.map((item, index) => {
-          totalWaferlistData.map((val, index) => {
-            if (item.id !== val.id) {
+        if (item.checked == true) {
+          waferlistData.map((val, index) => {
+            if (val.id !== checkboxvalue.id) {
               dispatch(addWaferlistDatas(item))
             }
           })
-        })
+        }
+
+        if (item.checked == false) {
+          dispatch(removeWaferlistDatas(checkboxvalue))
+        }
       }
-
-
     })
 
-  };
+  }
 
 
 
   return (
 
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" style={{ border: "1px  black" }}  >
+      <AppBar position="static" style={{ border: "1px  black" }} showMenuIconButton={false} >
         <Toolbar variant="dense">
+          {hideAndShowSidebarIcon.show_hide == true &&
 
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-          >
-            <MenuIcon />
-          </IconButton>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              sx={{ mr: 2, ...(open && { display: 'none' }) }}
+            >
+              <MenuIcon />
+            </IconButton>
+          }
           <Typography variant="h6" color="inherit" component="div">
             HTC
           </Typography>
@@ -140,12 +129,20 @@ export default function DenseAppBar() {
 
       {open === true ?
 
-        <Drawers
+        // <Drawers
+        //   handleDrawerClose={handleDrawerClose}
+        //   openfield={open}
+        //   handleChange={handleChange}
+        //   checked={checked}
+        //   totalCheckboxValues={totalLists}
+
+        // />
+        < DrawerContent
           handleDrawerClose={handleDrawerClose}
           openfield={open}
           handleChange={handleChange}
           checked={checked}
-
+          totalCheckboxValues={totalLists}
         />
         : false}
 

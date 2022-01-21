@@ -14,7 +14,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updatePageIndex } from '../../actions/pageAction';
 import Breadcums from '../../components/breadcums/breadcums';
 import { useHistory } from 'react-router-dom'
-import { addBreadcumbs } from '../../actions/breadcumbs/addbreadcumb';
+import { addBreadcumbs, updateBreadcumbs } from '../../actions/breadcumbs/addbreadcumb';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import IconButton from '@mui/material/IconButton';
+import { hideAndShowSidebar } from '../../actions/hideSidebar/hideSidebarAction';
 function a11yProps(index) {
     return {
         id: `full-width-tab-${index}`,
@@ -30,6 +33,7 @@ export default function WaferDetails() {
     const dispatch = useDispatch();
     const history = useHistory();
     const pageIndexes = useSelector(state => state.pageReducer.index);
+    const hideAndShowSidebarIcon = useSelector(state => state.showAndHideSidebarIcon);
 
     const totalBreadcumb = useSelector(state => {
         return state.breadcumbReducer
@@ -39,6 +43,10 @@ export default function WaferDetails() {
     useEffect(() => {
         setPageIndex(pageIndexes)
     }, [pageIndexes])
+
+    useEffect(() => {
+        dispatch(hideAndShowSidebar(true))
+    }, [])
 
     const handleChange = (event, newValue) => {
         dispatch(updatePageIndex(newValue))
@@ -51,32 +59,48 @@ export default function WaferDetails() {
     }, [])
 
     const WaferlistBreadcum = () => {
+        const breadcumbForWaferDetail = { path: '/waferlist', label: 'WAFERLIST' }
+        dispatch(addBreadcumbs(breadcumbForWaferDetail))
+        dispatch(updateBreadcumbs(0))
     }
     const WafedetailBreadcum = () => {
-        const breadcumbForWaferDetail = { path: '/waferdetailt', label: 'WAFERDETAIL' }
+        const breadcumbForWaferDetail = { path: '/waferdetail', label: '/WAFERDETAIL' }
         dispatch(addBreadcumbs(breadcumbForWaferDetail))
+        dispatch(updateBreadcumbs(1))
     }
     const testdetailBreadcum = () => {
-        totalBreadcumb.map((value, index) => {
-            if (value.path == '/waferdetailt') {
-                const breadcumbForWaferDetail = { path: '/testdetail', label: 'TESTDETAIL' }
+        const iWaferdetail = totalBreadcumb.map((item) => {
+            if (item.path !== '/waferdetail') {
+                const breadcumbForWaferDetail = {
+                    path: '/waferdetail', label: '/WAFERDETAIL'
+                }
+                const breadcumbForWaferTest = {
+                    path: '/testdetail', label: '/TESTDETAILS',
+                }
                 dispatch(addBreadcumbs(breadcumbForWaferDetail))
+                dispatch(addBreadcumbs(breadcumbForWaferTest))
             } else {
-                const breadcumbForWaferDetail = { path: '/waferdetailt', label: 'WAFERDETAIL' }
-                const breadcumbTestDetail = { path: '/testdetail', label: 'TESTDETAIL' }
+                const breadcumbForWaferDetail = { path: '/testdetail', label: '/TESTDETAILS' }
                 dispatch(addBreadcumbs(breadcumbForWaferDetail))
-                dispatch(addBreadcumbs(breadcumbTestDetail))
             }
         })
+        dispatch(updateBreadcumbs(2))
+    }
+    const gotInspectionList = () => {
+        history.push('/')
     }
 
     return (
         <div>
-            <Breadcums />
+            <div style={{ display: "flex", alignContent: "center" }}>
+                <IconButton onClick={gotInspectionList}>
+                    <ArrowBackIcon />
+                </IconButton>
+                <Breadcums />
+            </div>
 
-            <Box sx={{ bgcolor: "background.paper", width: "381%" }}>
+            <Box sx={{ bgcolor: "background.paper" }}>
                 <AppBar position="static">
-
                     <Tabs
                         value={pageIndex}
                         onChange={handleChange}
@@ -85,13 +109,10 @@ export default function WaferDetails() {
                         variant="fullWidth"
                         aria-label="full width tabs example"
                     >
-
                         <Tab label="Wafer List" {...a11yProps(0)} onClick={WaferlistBreadcum} />
                         <Tab label="Wafer Detail" {...a11yProps(1)} onClick={WafedetailBreadcum} />
                         <Tab label="Test Detail" {...a11yProps(2)} onClick={testdetailBreadcum} />
-
                     </Tabs>
-
                 </AppBar>
                 <TabPanel value={pageIndex} index={0} dir={theme.direction} >
                     <WaferList />

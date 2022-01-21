@@ -11,12 +11,14 @@ import Container from '../container/index'
 import { useSelector, useDispatch } from 'react-redux'
 import { updatePageIndex } from '../../actions/pageAction';
 import Example from '../../servieces/example'
-import { addInspectionList, totalInspectionListAction } from '../../actions/inspectionListAction';
+import { updateTotalInspectionListAction, totalInspectionListAction, updateTotalInspectionLists } from '../../actions/inspectionListAction';
 import Checkbox from '@mui/material/Checkbox';
 import { checkedInspectionListAction, uncheckedInspectionListAction } from '../../actions/checkedInspectionListAction'
 import totalSidebarData from '../../reducers/sidebarReducer/SelectInspectionData';
 import { removeSidebarData, sidebarSelectInspectDatas } from '../../actions/sidebar/selectInspectionAction';
 import { addWaferlistDatas, removeWaferlistDatas } from '../../actions/waferlist/addWaferlist';
+import { removeBreadcumbs } from '../../actions/breadcumbs/addbreadcumb';
+import { hideAndShowSidebar } from '../../actions/hideSidebar/hideSidebarAction';
 const InspectionList = () => {
 
     const [inspectionLists, setInspectionLists] = useState([]);
@@ -28,15 +30,7 @@ const InspectionList = () => {
     const pageLimit = inspectionLists.length / Rowcount;
     const history = useHistory();
     const dispatch = useDispatch();
-    //total inspection lists
-    const totalList = useSelector(state => state.totalInspectionList);
-    //totalSidebarData
-    const totalSidebarList = useSelector(state => state.totalSidebarData);
-    console.log(totalSidebarList, "oppppppp")
-    const [checkedState, setCheckedState] = useState();
-    const checkedInspectionListFromStore = useSelector(state => state.checkedInspectionList);
-    const [data, setData] = useState(checkedInspectionListFromStore);
-
+    const totalList = useSelector(state => state.totalInspectionList);// total
 
     useEffect(() => {
         Object.keys(Array.apply(0, Array(arrayLength / Rowcount))).map((Number) => {
@@ -45,24 +39,22 @@ const InspectionList = () => {
         });
     }, [arrayLength])
 
-
+    useEffect(() => {
+        dispatch(removeBreadcumbs())
+    }, [])
 
     useEffect(() => {
-        setData(checkedInspectionListFromStore)
-    }, [checkedInspectionListFromStore])
-
-
-    useEffect(() => {
-        setCheckedState(new Array(inspectionLists.length).fill(false));
-    }, [inspectionLists])
+        dispatch(hideAndShowSidebar(false))
+        return () => {
+        }
+    }, [])
 
     useEffect(() => {
         (async () => {
             const Data = await GetInspectionData();
-            setInspectionLists(Data)
+            setInspectionLists(totalList.length ? totalList : Data)
         })();
-    }, [GetInspectionData])
-
+    }, [])
 
     const leftIcon = () => {
         setForward((forward) => forward - Rowcount)
@@ -83,62 +75,44 @@ const InspectionList = () => {
         dispatch(updatePageIndex(value))
     }
 
-    let rowIndexValue = '';
-    let checkboxValueses = '';
-
+    var rowIndexValue = '';
+    var checkboxValueses = ''
     const clickCheckbox = (selectCheckboxValue, rowIndex) => {
         rowIndexValue = rowIndex;
         checkboxValueses = selectCheckboxValue;
     }
 
-    // To store all inspection lists
-
-    dispatch(totalInspectionListAction(inspectionLists))
-    // total inspection table data;
-
-    const handleChange = (checkBoxvalue, position) => {
-
-        dispatch(sidebarSelectInspectDatas(checkBoxvalue))
-
-        const updatedCheckedState = checkedState.map((item, index) => { // for update true or false
-            return index === position ? !item : item
-        })
-        setCheckedState(updatedCheckedState);
-
-        updatedCheckedState.map((value, index) => {
-            if (value === true) {
-                dispatch(checkedInspectionListAction(checkBoxvalue))
-                //to waferlist
-                dispatch(addWaferlistDatas(checkBoxvalue))
-
-            }
-        })
-        if (data?.length) {
-            data.map((value, index) => {
-                if (value.id == checkBoxvalue.id) {
-                    dispatch(uncheckedInspectionListAction(value))
-                    dispatch(removeSidebarData(value))
-                    //remove waferlist
-                    dispatch(removeWaferlistDatas(value))
-
-                }
-            })
-        }
+    if (!totalList.length) {
+        dispatch(totalInspectionListAction(inspectionLists))
     }
 
-
+    const handleChange = (checkBoxvalue) => {
+        const checked = inspectionLists.map((item) => {
+            if (item.id == checkBoxvalue.id) {
+                item.isChecked == true ? item.isChecked = false : item.isChecked = true
+                if (item.isChecked == true) {
+                    checkBoxvalue.checked = true
+                    dispatch(sidebarSelectInspectDatas(checkBoxvalue))
+                    dispatch(addWaferlistDatas(checkBoxvalue))
+                } else {
+                    dispatch(removeSidebarData(checkBoxvalue))
+                    dispatch(removeWaferlistDatas(checkBoxvalue))
+                }
+            }
+            return item
+        })
+        dispatch(updateTotalInspectionLists(checked))
+    }
 
     return (
-        <div>
-
+        <div style={{ width: '100%' }}>
             <BasicTable
                 columnDefinition={columnDefinition}
-                body={inspectionLists}
+                body={totalList ? totalList : inspectionLists}
                 Rowcount={Rowcount}
                 clickToBackandForward={forward}
                 clickCheckbox={clickCheckbox}
                 handleChange={handleChange}
-                checkedState={checkedState}
 
             />
             <Pagination
@@ -150,9 +124,8 @@ const InspectionList = () => {
                 Rowcount={Rowcount}
                 pageNumberClick={pageNumberClick}
             />
-            <div style={{ width: '1518px', height: "100px", backgroundColor: '#1976d2', display: "flex", justifyContent: 'flex-end' }}>
+            <div style={{ width: '100%', height: "100px", backgroundColor: '#1976d2' }}>
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
-
                     <Button variant="contained" onClick={() => gotoWaferDetails(0)}>WAFER LIST</Button>
                     <Button variant="contained" onClick={() => gotoWaferDetails(1)}>WAFER DETAILS</Button>
                     <Button variant="contained" onClick={() => gotoWaferDetails(2)}>TEST dETAILS</Button>

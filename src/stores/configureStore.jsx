@@ -9,6 +9,9 @@ import checkedInspectionList from "../reducers/checkedInspectionList";
 import totalSidebarData from "../reducers/sidebarReducer/SelectInspectionData";
 import totalWaferlists from "../reducers/waferlist/waferlistReducer";
 import breadcumbReducer from "../reducers/breadcumbReducer/breadcumbReducer";
+import graphOrderReducer from "../reducers/graphReducer/graphDrawerReducer";
+import showAndHideSidebarIcon from "../reducers/hideSidebarIcon/hideSidebarIcon";
+import sortWaferListReducer from "../reducers/sortWaferlist/wafwerlistSortReducer";
 
 const configureStore = () => {
     return createStore(
@@ -18,7 +21,10 @@ const configureStore = () => {
             checkedInspectionList: checkedInspectionList,// checked table data
             totalSidebarData: totalSidebarData,//total side bar data
             totalWaferlists: totalWaferlists,
-            breadcumbReducer: breadcumbReducer
+            breadcumbReducer: breadcumbReducer,
+            graphOrderReducer: graphOrderReducer, //ascending/descending
+            showAndHideSidebarIcon: showAndHideSidebarIcon, //show or hide icons
+            sortWaferListReducer: sortWaferListReducer // sort wafer list
         })
     );
 };

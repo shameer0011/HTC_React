@@ -1,23 +1,22 @@
 import * as actionTypes from './Actions';
 
-const initialstate={
-
-    logauth:false
+const initialstate = {
+    logauth: false
 }
 
-const logauth=(state=initialstate,action)=>{
+const logauth = (state = initialstate, action) => {
     console.log(action)
-    if(action.type==actionTypes.AUTH_SuCCESS){
+    if (action.type == actionTypes.AUTH_SuCCESS) {
         console.log("Inside login Auth..!")
-        return{
+        return {
             ...state,
-            logauth:true
+            logauth: true
         }
     }
-    else if(action.type==actionTypes.AUTH_FAIL){
-        return{
+    else if (action.type == actionTypes.AUTH_FAIL) {
+        return {
             ...state,
-            logauth:false
+            logauth: false
         }
     }
     return state;

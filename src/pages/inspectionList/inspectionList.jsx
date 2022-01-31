@@ -52,7 +52,7 @@ const InspectionList = () => {
     useEffect(() => {
         (async () => {
             const Data = await GetInspectionData();
-            setInspectionLists(totalList.length ? totalList : Data)
+            setInspectionLists(totalList && totalList.length ? totalList : Data)
         })();
     }, [])
 

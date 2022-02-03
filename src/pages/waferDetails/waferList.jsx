@@ -58,6 +58,10 @@ const WaferList = () => {
         "waferId": 'waferId',
         "lotId": 'lotId'
     }
+    const [showWaferlistCarousal, setShowWaferlistCarousal] = useState(3);
+    const [startDisplayIndex, setStartDisplayIndex] = useState(0);
+
+
     useEffect(() => {
         const sorted = sortFunction(waferlists, sortWaferlist.order, labeles[sortWaferlist.label])
         setsortWaferlistDisplay([...sorted])
@@ -94,6 +98,26 @@ const WaferList = () => {
         if (key === 'backword') {
             setActiveIndex(prevState => {
                 return { index: prevState.index - 1 }
+            })
+        }
+
+
+    }, [])
+    const handleChangeofCaurosal = useCallback((move) => {
+        if (move == 'double_forward') {
+            setStartDisplayIndex(prevState => {
+                return prevState + 3
+            })
+            setShowWaferlistCarousal(prevState => {
+                return prevState + 3
+            })
+        }
+        if (move == 'double_backword') {
+            setStartDisplayIndex(prevState => {
+                return prevState - 3
+            })
+            setShowWaferlistCarousal(prevState => {
+                return prevState - 3
             })
         }
     }, [])
@@ -148,13 +172,15 @@ const WaferList = () => {
                 </div>
 
                 <div style={{ display: "flex" }}>
+                    <IconButton onClick={() => handleChangeofCaurosal("double_backword")} style={{ marginRight: "30px" }}>
+                        <ArrowBackIosIcon />
+                        <ArrowBackIosIcon />
+                    </IconButton>
                     <IconButton disabled={activeIndex.index == 0} onClick={() => handleChange("backword")}>
                         <ArrowBackIosIcon />
                     </IconButton>
-                    {sortWaferlistDisplay.length && sortWaferlistDisplay.map((item, key) => {
-                        // console.log(key, activeIndex.index);
-                        // console.log(key == activeIndex, "true /false")
-                        // console.log(activeIndex.index, "activeIndex")
+
+                    {sortWaferlistDisplay.length && sortWaferlistDisplay.slice(startDisplayIndex, showWaferlistCarousal).map((item, key) => {
                         const className = key == activeIndex.index ? "green" : "";
                         return (
                             <>
@@ -179,6 +205,9 @@ const WaferList = () => {
 
                     <IconButton disabled={sortWaferlistDisplay.length - 1 == activeIndex.index} onClick={() => handleChange("forward")}>
                         <ArrowForwardIosIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleChangeofCaurosal("double_forward")} style={{ marginLeft: "30px" }}>
+                        <ArrowForwardIosIcon />  <ArrowForwardIosIcon />
                     </IconButton>
 
                 </div>
@@ -224,3 +253,4 @@ const WaferList = () => {
     )
 }
 export default WaferList;
+

@@ -11,9 +11,10 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 app.use(cors())
 
 
-app.use('/', (req, res) => {
-    res.send('Welcome to memmories')
-})
+// app.use('/', (req, res) => { 
+//     console.log(req.body, "req.body")   
+//     res.send(req.body)
+// })
 
 //for predefined start from 'posts' ,eg: http://localhost:5000/posts
 app.use('/posts', postRouter)

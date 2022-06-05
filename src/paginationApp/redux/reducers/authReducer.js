@@ -21,4 +21,11 @@ const authReducer = (state = user, action) => {
             return state;
     }
 }
-export default authReducer;  
+export default authReducer;
+
+// this reducer for google email validation
+
+// google email==>login.logout(actions)
+
+//form validation==>signup,signin(actions)
+

@@ -10,6 +10,7 @@ import Input from "./input";
 import useStyles from "./authStyle";
 import Icon from './icon'
 import { login } from "../../redux/actions/loginAction";
+import { signin, signup } from "../../redux/actions/authUsingForm/auth";
 const Auth = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -22,9 +23,9 @@ const Auth = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (isSignup) {
-            //  dispatch(login(formData,history))
+            dispatch(signup(formData, history))
         } else {
-            // dispatch(login(formData,history))
+            dispatch(signin(formData, history))
         }
     };
     const handleChange = (event) => {
@@ -40,12 +41,10 @@ const Auth = () => {
         setShowPassword((prev) => !prev);
     };
     const googleSuccess = (res) => {
-        console.log(res, "responsee")
         const result = res?.profileObj;
         const token = res?.tokenId;
         try {
             dispatch(login(result, token));
-            // dispatch({ type: "LOGIN", payload: { token, result } });
             history.push("/");
         } catch (error) {
             console.log(error)

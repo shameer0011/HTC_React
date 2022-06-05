@@ -1,0 +1,32 @@
+{
+  "users": [
+    {
+      "name": "shameer321147",
+      "email": "shameershemi94@gmail.com",
+      "phone": "99995668457",
+      "address": "panikkaveetil kizhakeethil",
+      "id": 16
+    },
+    {
+      "name": "shameer568",
+      "email": "shameershemi94@gmail.com",
+      "phone": "9999kjjhh",
+      "address": "panikkaveetil",
+      "id": 17
+    },
+    {
+      "name": "shameer789",
+      "email": "shameershemi94@gmail.com",
+      "phone": "9995668457",
+      "address": "panikkaveetil",
+      "id": 18
+    },
+    {
+      "name": "shameer159",
+      "email": "shameershemi0094@gmail.com",
+      "phone": "9999kjjhh",
+      "address": "panikkaveetil",
+      "id": 19
+    }
+  ]
+}

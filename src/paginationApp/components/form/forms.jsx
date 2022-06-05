@@ -5,24 +5,29 @@ import FileBase from 'react-file-base64'
 import { useSelector, useDispatch } from 'react-redux';
 import { createPost, updatePost } from '../../redux/actions/getpost.js';
 const Forms = ({ currentId }) => {
+    console.log(currentId, "current id formsss")
     const [postData, setPostData] = useState({
         title: '',
         creator: '',
         message: '',
-        tag: [],
+        tags: [],
         selectedFile: '',
     });
-
+    console.log(postData);
+    const user = JSON.parse(localStorage.getItem('profile'));
     const classes = useStyles();
     const dispatch = useDispatch();
-    const state = useSelector(state => state.data);
-    const updateData = state?.flat(1).find((id) => currentId ? id._id === currentId : null);
+    const posts = useSelector(state => state.data);
+    console.log(posts, "state form 789");
+    const updateData = posts.posts.find((id) => currentId ? id._id === currentId : null);
+    // const post = useSelector((state) => (currentId ? state.posts.posts.find((message) => message._id === currentId) : null));
+    console.log(updateData, "updated daraa")
     useEffect(() => {
         setPostData({
             title: updateData?.title,
             creator: updateData?.creator,
             message: updateData?.message,
-            tag: updateData?.tag,
+            tags: updateData?.tag,
             selectedFile: updateData?.selectedFile,
         });
     }, [updateData])
@@ -33,35 +38,16 @@ const Forms = ({ currentId }) => {
         });
     }
     const onSubmit = (e) => {
-        e.preventDefault()
-        if (currentId) {
-            dispatch(updatePost(currentId, postData))
+        e.preventDefault();
+        if (currentId === 0 || currentId === undefined || currentId === null) {
+            console.log("create post");
+            dispatch(createPost({ ...postData, name: user?.result?.name }));
+            clear();
+        } else {
+            console.log(currentId, "update post 45");
+            dispatch(updatePost(currentId, { ...postData, name: user?.result?.name }));
+            clear();
         }
-        setPostData(
-            {
-                "title": "",
-                "message": "",
-                "createdAt": "",
-                "selectedFile": "",
-                "tag": [],
-                "likeCount": "",
-                "creator": ""
-
-            })
-        if (!currentId) {
-            dispatch(createPost(postData))
-        }
-        setPostData(
-            {
-                "title": "",
-                "message": "",
-                "createdAt": "",
-                "selectedFile": "",
-                "tag": [],
-                "likeCount": "",
-                "creator": ""
-
-            })
     }
     const clear = () => {
         setPostData(
@@ -70,12 +56,22 @@ const Forms = ({ currentId }) => {
                 "message": "",
                 "createdAt": "",
                 "selectedFile": "",
-                "tag": [],
+                "tags": [],
                 "likeCount": "",
                 "creator": ""
 
             })
     }
+    if (!user) {
+        return (
+            <Paper className={classes.paper}>
+                <Typography variant="h6" align="center">
+                    Please Sign In to create your own memories and like other's memories.
+                </Typography>
+            </Paper>
+        );
+    }
+
     return <div>
 
         <Paper className={classes.paper}>
@@ -108,15 +104,16 @@ const Forms = ({ currentId }) => {
                     onChange={handleChange}
 
                 />
-                <TextField
-                    name="tag"
+                {/* <TextField
+                    name="tags"
                     variant="outlined"
-                    label="Tag"
+                    label="Tags"
                     fullWidth
-                    value={postData.tags?.map((item) => `#${item} `)}
+                    // value={postData.tags?.map((item) => `#${item} `)}
                     onChange={handleChange}
+                /> */}
+                <TextField name="tags" variant="outlined" label="Tags (coma separated)" fullWidth value={postData.tags} onChange={(e) => setPostData({ ...postData, tags: e.target.value.split(',') })} />
 
-                />
                 <div className={classes.fileInput}><FileBase type="file" multiple={false}
                     onDone={({ base64 }) => setPostData({ ...postData, selectedFile: base64 })}
                 />

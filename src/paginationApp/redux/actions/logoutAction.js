@@ -5,3 +5,4 @@ export const logoutAction = () => {
         type: LOGOUT,
     };
 }
+//this action used for google email action

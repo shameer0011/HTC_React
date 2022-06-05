@@ -4,17 +4,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import Post from './post/post';
 import useStyle from './style';
 const Posts = ({ currentId, setCurrentId }) => {
-  const posts = useSelector(state => state.data);
+  console.log(setCurrentId, "current id")
+  const { posts, isLoading } = useSelector((state) => state.data);
+  console.log(posts, "in post component");
   const classes = useStyle();
   const dispatch = useDispatch();
-
-
+  if (!posts?.length && !isLoading) return 'No posts';
   return <>
-    postssss
-    {!posts?.length ? <CircularProgress /> : (
-      <Grid className={classes.container} container alignItems="stretch" spacing={3}>
+    {isLoading ? <CircularProgress /> : (
+      <Grid className={classes.container} alignItems="stretch" spacing={3}>
         {posts?.map((post) => (
-          <Grid key={post._id} item xs={12} sm={6} md={6}>
+          <Grid key={post._id} item xs={12} sm={12} md={6} lg={3}>
             <Post post={post} setCurrentId={setCurrentId} />
           </Grid>
         ))}

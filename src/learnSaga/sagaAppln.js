@@ -18,44 +18,38 @@ const SagaAppln = () => {
 
     const [show, setShow] = useState('')
     console.log(show, 'show');
+
     let ref = useRef();
     // useEffect(() => {
     //     dispatch(getOneUserCommentRequested(1));
     // }, [dispatch]);
     const drawStack = useCallback(
-        (drawingMode) => {
-            switch (drawingMode) {
+        () => {
+            switch (show) {
                 case SHOW_ALL_USERS:
-                    console.log(drawingMode, 'drawingMode1');
-                    setShow(allUserReducerState)
-                    ref.current = allUserReducerState;
-                    break;
+                    console.log(show, 'drawingMode1');
+                    return allUserReducerState
                 case SHOW_ONE_USER_COMMENT:
-                    console.log(drawingMode, 'drawingMode1');
-                    setShow(oneUserCommentReducerStateData)
-                    ref.current = oneUserCommentReducerStateData;
-                    break;
+                    console.log(show, 'drawingMode1');
+                    return oneUserCommentReducerStateData
                 case SHOW_POST_DATA:
-                    console.log(drawingMode, 'drawingMode1');
-                    setShow(postUserReducerState)
-                    ref.current = postUserReducerState;
-                    break
+                    return postUserReducerState
                 default:
                     return null;
             }
         },
-        [allUserReducerState, oneUserCommentReducerStateData, postUserReducerState]
+        [show, allUserReducerState, oneUserCommentReducerStateData, postUserReducerState]
     );
 
-    const getOneUserData = useCallback(async (id) => {
-        await dispatch(getOneUserCommentRequested(1));
-        await drawStack(SHOW_ONE_USER_COMMENT)
+    const getOneUserData = useCallback((id) => {
+        dispatch(getOneUserCommentRequested(1));
+        setShow(SHOW_ONE_USER_COMMENT)
     }, [dispatch, drawStack]);
 
 
     const getTotalUsersData = useCallback(() => {
         dispatch(getAllUsersDataRequested())
-        drawStack(SHOW_ALL_USERS)
+        setShow(SHOW_ALL_USERS)
     }, [dispatch, drawStack])
 
     //  const data = {
@@ -66,7 +60,7 @@ const SagaAppln = () => {
     // }
     const postOneData = useCallback(() => {
         dispatch(postDataRequested())
-        drawStack(SHOW_POST_DATA)
+        setShow(SHOW_POST_DATA)
     }, [dispatch, drawStack])
 
     return (
@@ -75,7 +69,9 @@ const SagaAppln = () => {
             <button onClick={getTotalUsersData}>getTotalUserData</button>
             <button onClick={postOneData}>PostData</button>
             <div>
-                {show}
+                <prev>
+                    {JSON.stringify(drawStack(show), null, 4)}
+                </prev>
             </div>
 
 

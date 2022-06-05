@@ -1,41 +1,42 @@
-import { GET_POST, CREATE_POST, UPDATE_POST, DELETE_UPDATE, DELETE_POST, LIKE_POST } from "../actions/actionTypes";
+import { GET_POST, CREATE_POST, UPDATE_POST, FETCH_POST, DELETE_POST, LIKE_POST, FETCH_BY_SEARCH, START_LOADING, STOP_LOADING } from "../actions/actionTypes";
 
-const totalLists = [];
-
-const fetchReducer = (state = totalLists, action) => {
+export default (state = { isLoading: true, posts: [] }, action) => {
     switch (action.type) {
+        case START_LOADING:
+            return { ...state, isLoading: true };
+        case STOP_LOADING:
+            return { ...state, isLoading: false };
         case GET_POST:
-            if (action) {
-                return action.payload
-            }
-            break
-        case CREATE_POST:
-            if (action) {
-                return [...state, action.payload]
-            }
-            break
-        case UPDATE_POST:
-            if (action) {
-                // console.log(state, "state in update action")
-                // console.log(action.payload, "action in update action")
-                // return [...state.filter(post => post._id !== action.payload._id), action.payload]
-                return state.map(post => post._id === action.payload._id ? action.payload : post)
-            }
-            break
-        case DELETE_POST:
-            if (action) {
-                console.log(action.payload, "action in delete action")
-                return state.filter((post) => post._id !== action.payload) //returns an array of posts that do not match the id of the post that was deleted))
-            }
-            break
+            return {
+                ...state,
+                posts: action.payload.data,
+                currentPage: action.payload.currentPage,
+                numberOfPages: action.payload.numberOfPages,
+            };
+        case FETCH_BY_SEARCH:
+            return { ...state, posts: action.payload.data };
+        case FETCH_POST:
+            return { ...state, post: action.payload.post };
         case LIKE_POST:
-            if (action) {
-                console.log(action.payload, "action in delete action")
-                return state.map(post => post._id === action.payload._id ? action.payload : post) //returns an array of posts that do not match the id of the post that was deleted))
-            }
-            break
+            return { ...state, posts: state.posts.map((post) => (post._id === action.payload._id ? action.payload : post)) };
+        // case COMMENT:
+        //     return {
+        //         ...state,
+        //         posts: state.posts.map((post) => {
+        //             if (post._id == +action.payload._id) {
+        //                 return action.payload;
+        //             }
+        //             return post;
+        //         }),
+        //     };
+        case CREATE_POST:
+            return { ...state, posts: [...state.posts, action.payload] };
+        case UPDATE_POST:
+            return { ...state, posts: state.posts.map((post) => (post._id === action.payload._id ? action.payload : post)) };
+        case DELETE_POST:
+            return { ...state, posts: state.posts.filter((post) => post._id !== action.payload) };
         default:
             return state;
     }
-}
-export default fetchReducer;  
+};
+

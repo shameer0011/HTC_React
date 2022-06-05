@@ -7,3 +7,4 @@ export const login = (user, token) => {
 
     }
 }
+//This action is email using authentication
